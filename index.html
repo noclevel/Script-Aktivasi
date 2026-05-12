@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVELNET NOC Config - All-in-One</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .glass-panel { background: white; border: 1px solid #e2e8f0; border-radius: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .copy-toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: white; padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 600; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 50; }
+        .copy-toast.show { transform: translateX(-50%) translateY(0); }
+        pre { background: #0f172a; color: #cbd5e1; padding: 1.25rem; border-radius: 12px; font-size: 0.85rem; line-height: 1.6; border: 1px solid #1e293b; overflow-x: auto; }
+        .cmd-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Header -->
+        <header class="flex items-center justify-between p-6 bg-white rounded-3xl border border-slate-200 shadow-sm">
+            <div>
+                <h1 class="text-2xl font-black tracking-tighter">LEVELNET <span class="text-blue-600">NOC</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Universal Config Tool v3.0</p>
+            </div>
+            <div class="flex items-center space-x-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-[10px] font-black text-green-700 uppercase">Live Engine Ready</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Sidebar / Inputs -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-panel p-6 sticky top-6">
+                    <h2 class="text-sm font-black mb-6 flex items-center text-slate-800">
+                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        DATA KONFIGURASI
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="cmd-label mb-1.5 block">Service Mode</label>
+                                <select id="mode" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-500">
+                                    <option value="VLAN">VLAN Rumahan</option>
+                                    <option value="hotspot">Hotspot Voucher</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="cmd-label mb-1.5 block">Modem Type</label>
+                                <select id="modem_type" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-500"></select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="cmd-label mb-1.5 block">Cluster Area</label>
+                            <select id="cluster" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-blue-500"></select>
+                        </div>
+
+                        <div id="vlan_dhcp_container" class="hidden">
+                            <label class="cmd-label mb-1.5 block text-blue-600">VLAN DHCP (ACS)</label>
+                            <input type="text" id="vlan_dhcp" placeholder="Contoh: 10" class="w-full p-2.5 bg-blue-50 border border-blue-100 rounded-xl text-xs font-semibold outline-none">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="cmd-label mb-1.5 block">PPPoE User</label>
+                                <input type="text" id="pppoe_user" placeholder="USER_ID" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none">
+                            </div>
+                            <div>
+                                <label class="cmd-label mb-1.5 block">SN Modem</label>
+                                <input type="text" id="sn_modem" placeholder="ZTEG..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="cmd-label mb-1.5 block">P/S/P (Olt Coords)</label>
+                                <input type="text" id="olt_coords" placeholder="1/1/1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none">
+                            </div>
+                            <div>
+                                <label class="cmd-label mb-1.5 block">ONU Port</label>
+                                <input type="text" id="onu_port" placeholder="1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content / Outputs -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Telnet Chips -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between group cursor-pointer hover:border-blue-300" onclick="copyRaw('telnet_cmd')">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mr-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="cmd-label">Telnet Address</p>
+                                <p id="telnet_cmd" class="text-xs font-mono font-bold">...</p>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-black text-blue-500 opacity-0 group-hover:opacity-100 uppercase">Copy</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between group cursor-pointer hover:border-orange-300" onclick="copyRaw('winbox_ip')">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mr-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 01-2-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <div>
+                                <p class="cmd-label">Winbox Address</p>
+                                <p id="winbox_ip" class="text-xs font-mono font-bold">...</p>
+                            </div>
+                        </div>
+                        <span class="text-[9px] font-black text-orange-500 opacity-0 group-hover:opacity-100 uppercase">Copy</span>
+                    </div>
+                </div>
+
+                <!-- Main Commands -->
+                <div class="space-y-6">
+                    <section>
+                        <div class="flex justify-between items-center mb-3 px-2">
+                            <h3 class="cmd-label text-slate-600">1. Pengecekan Jalur</h3>
+                            <button onclick="copyRaw('check_code')" class="text-[9px] font-black bg-slate-200 text-slate-600 px-2 py-1 rounded-lg uppercase">Copy</button>
+                        </div>
+                        <pre id="check_code"></pre>
+                    </section>
+
+                    <section>
+                        <div class="flex justify-between items-center mb-3 px-2">
+                            <h3 class="cmd-label text-blue-600">2. Register Modem</h3>
+                            <button onclick="copyRaw('config_code')" class="text-[9px] font-black bg-blue-600 text-white px-3 py-1 rounded-lg uppercase shadow-sm">Copy Script</button>
+                        </div>
+                        <pre id="config_code"></pre>
+                    </section>
+
+                    <section id="extra_section" class="hidden">
+                        <div class="flex justify-between items-center mb-3 px-2">
+                            <h3 class="cmd-label text-purple-600">3. TR069 / ACS Step</h3>
+                            <button onclick="copyRaw('extra_code')" class="text-[9px] font-black bg-purple-600 text-white px-3 py-1 rounded-lg uppercase shadow-sm">Copy ACS</button>
+                        </div>
+                        <pre id="extra_code"></pre>
+                    </section>
+                </div>
+
+                <!-- Troubleshooting Grid -->
+                <section class="bg-slate-900 p-6 rounded-[32px] border border-slate-800 shadow-xl overflow-hidden relative">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <svg class="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </div>
+                    <h3 class="cmd-label text-slate-400 mb-6 flex items-center">
+                        <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>Maintenance & Troubleshooting
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase">Cek by SN</span>
+                                <button onclick="copyRaw('ts_sn')" class="text-slate-400 hover:text-white"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                            </div>
+                            <code id="ts_sn" class="text-xs font-mono text-blue-400 font-bold">...</code>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase">Show Running</span>
+                                <button onclick="copyRaw('ts_running')" class="text-slate-400 hover:text-white"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                            </div>
+                            <code id="ts_running" class="text-xs font-mono text-blue-400 font-bold">...</code>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase">Cek Power (Rx)</span>
+                                <button onclick="copyRaw('ts_power')" class="text-slate-400 hover:text-white"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                            </div>
+                            <code id="ts_power" class="text-xs font-mono text-blue-400 font-bold">...</code>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase">Detail Info ONU</span>
+                                <button onclick="copyRaw('ts_detail')" class="text-slate-400 hover:text-white"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                            </div>
+                            <code id="ts_detail" class="text-xs font-mono text-blue-400 font-bold">...</code>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-slate-800">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] font-black text-red-500 uppercase tracking-widest">Unregister ONU Command</span>
+                            <button onclick="copyRaw('delete_code')" class="text-[9px] font-black bg-red-600 text-white px-3 py-1 rounded-lg uppercase">Copy Delete</button>
+                        </div>
+                        <pre id="delete_code" class="!bg-red-950/20 !border-red-900/50 !text-red-400"></pre>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="copy-toast">Berhasil disalin!</div>
+
+    <script>
+        const db = {
+    "packets": [
+        "15 Mbps",
+        "25 Mbps",
+        "30 Mbps",
+        "40 Mbps",
+        "50 Mbps",
+        "100 Mbps"
+    ],
+    "modem_types": [
+        "ZTE",
+        "NOKIA",
+        "XPON",
+        "FiberHome ACS",
+        "FiberHome Manual"
+    ],
+    "clusters": [
+        {
+            "name": "EXISTING",
+            "olt_type": "C320",
+            "vlan": 100,
+            "hotspot": 200,
+            "winbox": "103.231.236.234:8282"
+        },
+        {
+            "name": "EXISTING (C300)",
+            "olt_type": "C300",
+            "vlan": 200,
+            "hotspot": 100,
+            "winbox": "103.231.236.234:8282"
+        },
+        {
+            "name": "BANYUMUDAL",
+            "olt_type": "C320 & C300",
+            "vlan": 500,
+            "hotspot": 550,
+            "winbox": "103.231.236.236:8227"
+        },
+        {
+            "name": "MOGA",
+            "olt_type": "C320 & C300",
+            "vlan": 300,
+            "hotspot": 350,
+            "winbox": "103.231.236.235:8126"
+        },
+        {
+            "name": "GAMBUHAN",
+            "olt_type": "C320",
+            "vlan": 700,
+            "hotspot": 701,
+            "winbox": "103.231.236.237:8291"
+        },
+        {
+            "name": "KAJENENGAN",
+            "olt_type": "C320",
+            "vlan": 850,
+            "hotspot": 860,
+            "winbox": "103.231.236.224:8127"
+        },
+        {
+            "name": "PULOSARI (CKD)",
+            "olt_type": "CKD",
+            "vlan": 810,
+            "hotspot": 0,
+            "winbox": "103.231.236.221:8445"
+        },
+        {
+            "name": "PULOSARI (C300)",
+            "olt_type": "C300",
+            "vlan": 0,
+            "hotspot": 800,
+            "winbox": "103.231.236.221:8445"
+        },
+        {
+            "name": "GOMBONG",
+            "olt_type": "C300",
+            "vlan": 750,
+            "hotspot": 760,
+            "winbox": "103.231.236.221:8445"
+        },
+        {
+            "name": "GUNUNGJATI",
+            "olt_type": "C320",
+            "vlan": 400,
+            "hotspot": 410,
+            "winbox": "103.231.236.220:8382"
+        },
+        {
+            "name": "KUTABAWA",
+            "olt_type": "C320",
+            "vlan": 450,
+            "hotspot": 460,
+            "winbox": "103.231.236.219:8177"
+        },
+        {
+            "name": "PAK MUSLIM",
+            "olt_type": "C320 & C300",
+            "vlan": 600,
+            "hotspot": 600,
+            "winbox": "103.231.236.219:8177"
+        }
+    ],
+    "olts": [
+        {
+            "ip": "136.1.1.100",
+            "clusters": [
+                "EXISTING",
+                "MOGA",
+                "BANYUMUDAL"
+            ]
+        },
+        {
+            "ip": "172.16.120.254",
+            "clusters": [
+                "EXISTING",
+                "MOGA",
+                "BANYUMUDAL"
+            ]
+        },
+        {
+            "ip": "172.25.1.92",
+            "clusters": [
+                "EXISTING",
+                "GAMBUHAN",
+                "GUNUNGJATI"
+            ]
+        },
+        {
+            "ip": "172.25.1.80",
+            "clusters": [
+                "KUTABAWA"
+            ]
+        },
+        {
+            "ip": "172.254.1.50",
+            "clusters": [
+                "EXISTING",
+                "KAJENENGAN"
+            ]
+        },
+        {
+            "ip": "10.114.0.10",
+            "clusters": [
+                "PULOSARI",
+                "KUTABAWA"
+            ]
+        }
+    ],
+    "vlan_remote": {
+        "NOKIA": 881,
+        "FiberHome ACS": 10,
+        "FiberHome Manual": 10
+    }
+};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init Dropdowns
+            const clusterSel = document.getElementById('cluster');
+            const modemSel = document.getElementById('modem_type');
+            
+            db.clusters.forEach((c, i) => clusterSel.add(new Option(`${c.name} (${c.olt_type})`, i)));
+            db.modem_types.forEach(m => modemSel.add(new Option(m, m)));
+
+            // Add Event Listeners to ALL inputs for auto-update
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(el => el.addEventListener('input', updateUI));
+
+            updateUI(); // Initial Run
+        });
+
+        function updateUI() {
+            const mode = document.getElementById('mode').value;
+            const cluster = db.clusters[document.getElementById('cluster').value];
+            const modemType = document.getElementById('modem_type').value;
+            const pppoeUser = document.getElementById('pppoe_user').value || 'USER_ID';
+            const snModem = document.getElementById('sn_modem').value || 'SN_MODEM';
+            const coords = document.getElementById('olt_coords').value || '1/1/1';
+            const onuPort = document.getElementById('onu_port').value || '1';
+            const vlanDhcp = document.getElementById('vlan_dhcp').value || '10';
+
+            // UI Adjustments
+            document.getElementById('vlan_dhcp_container').classList.toggle('hidden', modemType !== 'FiberHome ACS');
+            
+            const vlanTarget = mode === 'VLAN' ? cluster.vlan : cluster.hotspot;
+            const vlanRem = db.vlan_remote[modemType] || '881';
+            const oltObj = db.olts.find(o => o.clusters.some(c => cluster.name.includes(c))) || db.olts[0];
+            const profile = (oltObj.ip === '172.25.1.92' || oltObj.ip === '172.254.1.50') ? '1GB' : '1G';
+
+            // Update Static Info
+            document.getElementById('telnet_cmd').innerText = `system telnet ${oltObj.ip}`;
+            document.getElementById('winbox_ip').innerText = cluster.winbox;
+
+            // 1. Check Code
+            document.getElementById('check_code').innerText = 
+`show gpon onu uncfg
+show gpon onu state
+show gpon onu state gpon-olt_${coords}`;
+
+            // 2. Logic Generator
+            let main = ''; let extra = '';
+            document.getElementById('extra_section').classList.add('hidden');
+
+            if (modemType === 'ZTE') {
+                main = `conf t
+interface gpon-olt_${coords}
+onu ${onuPort} type ZTE sn ${snModem}
+exit
+
+interface gpon-onu_${coords}:${onuPort}
+tcont 1 profile ${profile}
+gemport 1 tcont 1
+service-port 1 vport 1 user-vlan ${vlanTarget} vlan ${vlanTarget}
+exit
+
+pon-onu-mng gpon-onu_${coords}:${onuPort}
+service 1 gemport 1 vlan ${vlanTarget}
+wan-ip 1 mode pppoe username ${pppoeUser} password 1122 vlan-profile V100 host 1
+exit`;
+                extra = `conf t
+pon-onu-mng gpon-onu_${coords}:${onuPort}
+security-mgmt 212 state enable mode forward protocol web
+exit`;
+                document.getElementById('extra_section').classList.remove('hidden');
+            } else {
+                main = `conf t
+interface gpon-olt_${coords}
+onu ${onuPort} type ALL sn ${snModem}
+exit
+
+interface gpon-onu_${coords}:${onuPort}
+name ${pppoeUser}
+tcont 1 profile ${profile}
+gemport 1 tcont 1
+service-port 1 vport 1 user-vlan ${vlanTarget} vlan ${vlanTarget}
+${modemType.includes('NOKIA') || modemType === 'FiberHome ACS' ? `service-port 2 vport 1 user-vlan ${vlanRem} vlan ${vlanRem}` : ''}
+${modemType === 'FiberHome ACS' ? `service-port 3 vport 1 user-vlan ${vlanDhcp} vlan ${vlanDhcp}` : ''}
+exit
+
+pon-onu-mng gpon-onu_${coords}:${onuPort}
+service pppoe gemport 1 vlan ${vlanTarget}
+${modemType.includes('NOKIA') || modemType === 'FiberHome ACS' ? `service acs gemport 1 vlan ${vlanRem}` : ''}
+${modemType === 'FiberHome ACS' ? `service hs gemport 1 vlan ${vlanDhcp}` : ''}
+vlan port veip_1 mode tag vlan ${vlanTarget}
+end`;
+                if (modemType === 'FiberHome ACS') {
+                    extra = `tr069-mgmt 1 state unlock
+tr069-mgmt 1 acs http://10.20.80.221:9909/v1/acs/QERE0G validate basic username acs password acs
+end`;
+                    document.getElementById('extra_section').classList.remove('hidden');
+                }
+            }
+
+            document.getElementById('config_code').innerText = main;
+            document.getElementById('extra_code').innerText = extra;
+
+            // 3. Troubleshooting
+            document.getElementById('ts_sn').innerText = `show gpon onu by sn ${snModem}`;
+            document.getElementById('ts_running').innerText = `show onu running config gpon-onu_${coords}:${onuPort}`;
+            document.getElementById('ts_power').innerText = `show pon power attenuation gpon-onu_${coords}:${onuPort}`;
+            document.getElementById('ts_detail').innerText = `show gpon onu detail-info gpon-onu_${coords}:${onuPort}`;
+
+            // 4. Delete
+            document.getElementById('delete_code').innerText = 
+`conf t
+interface gpon-olt_${coords}
+no onu ${onuPort}
+end`;
+        }
+
+        function copyRaw(id) {
+            const txt = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(txt).then(() => {
+                const t = document.getElementById('toast');
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2000);
+            });
+        }
+    </script>
+</body>
+</html>
